@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP de Bolso - Panpharma</title>
+    <style>
+        :root {
+            --panpharma-blue: #1F497D;
+            --nazaria-orange: #E36C0A;
+            --success-green: #00b050;
+            --bg-light: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        body { background-color: var(--bg-light); color: var(--text-dark); padding: 15px; padding-bottom: 40px; }
+        
+        .header { background-color: var(--panpharma-blue); color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; border-bottom: 4px solid #FFC000; }
+        .header h1 { font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { font-size: 0.9rem; opacity: 0.8; margin-top: 5px; }
+
+        .card { background-color: var(--card-bg); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .card-title { font-size: 1.1rem; font-weight: bold; color: var(--panpharma-blue); margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a5568; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 1.1rem; transition: border-color 0.2s; }
+        .input-group input:focus { outline: none; border-color: var(--panpharma-blue); box-shadow: 0 0 0 3px rgba(31, 73, 125, 0.2); }
+        
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .data-item { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7; }
+        .data-item span { display: block; font-size: 0.75rem; color: #718096; text-transform: uppercase; font-weight: bold; }
+        .data-item strong { font-size: 1rem; color: var(--text-dark); }
+        .data-item.full-width { grid-column: span 2; }
+
+        .battle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .col-panpharma { border: 2px solid var(--panpharma-blue); border-radius: 8px; overflow: hidden; }
+        .col-nazaria { border: 2px solid var(--nazaria-orange); border-radius: 8px; overflow: hidden; }
+        
+        .col-header { padding: 10px; text-align: center; color: white; font-weight: bold; font-size: 0.95rem; }
+        .col-panpharma .col-header { background-color: var(--panpharma-blue); }
+        .col-nazaria .col-header { background-color: var(--nazaria-orange); }
+
+        .col-body { padding: 15px; background-color: #fff; }
+        .percent-wrapper { position: relative; }
+        .percent-wrapper input { width: 100%; padding: 10px 25px 10px 10px; font-weight: bold; text-align: center; font-size: 1.2rem; border: 2px solid #e2e8f0; border-radius: 6px; background-color: #FFF2CC; }
+        .percent-wrapper::after { content: "%"; position: absolute; right: 12px; top: 12px; font-weight: bold; color: #4a5568; }
+
+        .result-row { margin-top: 15px; text-align: center; }
+        .result-label { font-size: 0.8rem; color: #718096; font-weight: bold; display: block; margin-bottom: 2px; }
+        .result-value { font-size: 1.1rem; font-weight: bold; }
+        
+        .final-cost { background-color: #f1f5f9; padding: 10px; border-radius: 6px; margin-top: 15px; border: 1px solid #cbd5e0; }
+        .final-cost .result-value { font-size: 1.3rem; color: #1a202c; }
+
+        .advantage-box { background-color: var(--success-green); color: white; text-align: center; padding: 15px; border-radius: 8px; margin-top: 25px; box-shadow: 0 4px 6px rgba(0, 176, 80, 0.2); }
+        .advantage-box span { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+        .advantage-box h2 { font-size: 1.8rem; margin-top: 5px; }
+
+        #error-msg { color: #e53e3e; font-size: 0.9rem; font-weight: bold; display: none; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ERP de Bolso</h1>
+        <p>Motor Tributário Dinâmico MA</p>
+    </div>
+
+    <!-- PESQUISA -->
+    <div class="card">
+        <div class="card-title">1. Consultar Produto</div>
+        <div class="input-group">
+            <input type="number" id="codigoInput" placeholder="Ex: 105280 ou 104326" autocomplete="off">
+            <div id="error-msg">Produto não encontrado no sistema.</div>
+        </div>
+        
+        <div class="data-grid" id="productData" style="display: none;">
+            <div class="data-item full-width">
+                <span>Descrição</span>
+                <strong id="lblDescricao">-</strong>
+            </div>
+            <div class="data-item">
+                <span>PF (Tabela)</span>
+                <strong id="lblPF">-</strong>
+            </div>
+            <div class="data-item">
+                <span>PMC (Tabela)</span>
+                <strong id="lblPMC">-</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMERCIAL -->
+    <div class="card" id="commercialSection" style="display: none; opacity: 0; transition: opacity 0.3s;">
+        <div class="card-title">2. Batalha Comercial</div>
+        
+        <div class="battle-grid">
+            <!-- PANPHARMA -->
+            <div class="col-panpharma">
+                <div class="col-header">PANPHARMA</div>
+                <div class="col-body">
+                    <div class="result-label">DESCONTO OFERTADO</div>
+                    <div class="percent-wrapper">
+                        <input type="number" id="descPanpharma" value="11" step="1">
+                    </div>
+                    
+                    <div class="result-row">
+                        <span class="result-label">LÍQUIDO</span>
+                        <span class="result-value" id="valLiqPan">R$ 0,00</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">IMPOSTO ST</span>
+                        <span class="result-value" id="valSTPan">R$ 0,00</span>
+                    </div>
+                    
+                    <div class="result-row final-cost">
+                        <span class="result-label">CUSTO FINAL</span>
+                        <span class="result-value" id="valFinalPan">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAZARIA -->
+            <div class="col-nazaria">
+                <div class="col-header">CONCORRÊNCIA</div>
+                <div class="col-body">
+                    <div class="result-label">DESCONTO OFERTADO</div>
+                    <div class="percent-wrapper">
+                        <input type="number" id="descNazaria" value="5" step="1">
+                    </div>
+                    
+                    <div class="result-row">
+                        <span class="result-label">LÍQUIDO</span>
+                        <span class="result-value" id="valLiqNaz">R$ 0,00</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">IMPOSTO ST</span>
+                        <span class="result-value" id="valSTNaz">R$ 0,00</span>
+                    </div>
+                    
+                    <div class="result-row final-cost">
+                        <span class="result-label">CUSTO FINAL</span>
+                        <span class="result-value" id="valFinalNaz">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="advantage-box">
+            <span>Lucro Extra Panpharma (Por Caixa)</span>
+            <h2 id="valVantagem">R$ 0,00</h2>
+        </div>
+    </div>
+
+    <script>
+        // Mini Banco de Dados Simulado (Extraído do ficheiro Excel real)
+        const db = {
+            "105280": { desc: "BETASERC 16MG C/30", pf: 39.70, pmc: 53.25, repasse: 0.1979, stFixo: 10.223624, isLiberado: false },
+            "104326": { desc: "GLIFAGE XR 1G C/30", pf: 45.34, pmc: 62.50, repasse: 0.1979, stFixo: 11.230126, isLiberado: false },
+            "400763": { desc: "LEITE MAGNESIA PHILLIPS 120ML", pf: 20.02, pmc: 0.00, repasse: 0.00, stFixo: 0, isLiberado: true, multLiberado: 0.349376 }
+        };
+
+        const codigoInput = document.getElementById('codigoInput');
+        const descPanpharma = document.getElementById('descPanpharma');
+        const descNazaria = document.getElementById('descNazaria');
+        
+        let currentProduct = null;
+
+        const formatMoney = (val) => "R$ " + val.toFixed(2).replace('.', ',');
+
+        const calculate = () => {
+            if (!currentProduct) return;
+
+            const p = currentProduct;
+            const dPan = parseFloat(descPanpharma.value || 0) / 100;
+            const dNaz = parseFloat(descNazaria.value || 0) / 100;
+            
+            const icmsOrigem = p.repasse === 0.1979 ? 0.04 : 0.12;
+
+            // Panpharma
+            const liqPan = p.pf * (1 - dPan) * (1 - p.repasse);
+            let stPan = 0;
+            
+            if (p.isLiberado) {
+                const debitoLiberado = liqPan * p.multLiberado;
+                stPan = Math.max(0, debitoLiberado - (liqPan * icmsOrigem));
+            } else {
+                stPan = Math.max(0, p.stFixo - (liqPan * icmsOrigem));
+            }
+            
+            const finalPan = liqPan + stPan;
+
+            // Nazaria (Imposto embutido no MA)
+            const liqNaz = p.pf * (1 - dNaz);
+            const stNaz = 0;
+            const finalNaz = liqNaz + stNaz;
+
+            // Render
+            document.getElementById('valLiqPan').innerText = formatMoney(liqPan);
+            document.getElementById('valSTPan').innerText = formatMoney(stPan);
+            document.getElementById('valFinalPan').innerText = formatMoney(finalPan);
+
+            document.getElementById('valLiqNaz').innerText = formatMoney(liqNaz);
+            document.getElementById('valSTNaz').innerText = formatMoney(stNaz);
+            document.getElementById('valFinalNaz').innerText = formatMoney(finalNaz);
+
+            const vantagem = finalNaz - finalPan;
+            const boxVantagem = document.querySelector('.advantage-box');
+            
+            document.getElementById('valVantagem').innerText = formatMoney(vantagem);
+            
+            if (vantagem > 0) {
+                boxVantagem.style.backgroundColor = 'var(--success-green)';
+            } else {
+                boxVantagem.style.backgroundColor = '#e53e3e'; // Red se perder
+            }
+        };
+
+        codigoInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            const errorMsg = document.getElementById('error-msg');
+            const dataGrid = document.getElementById('productData');
+            const commercial = document.getElementById('commercialSection');
+
+            if (val.length >= 6) {
+                if (db[val]) {
+                    currentProduct = db[val];
+                    errorMsg.style.display = 'none';
+                    
+                    document.getElementById('lblDescricao').innerText = currentProduct.desc;
+                    document.getElementById('lblPF').innerText = formatMoney(currentProduct.pf);
+                    document.getElementById('lblPMC').innerText = currentProduct.pmc > 0 ? formatMoney(currentProduct.pmc) : 'LIBERADO';
+                    
+                    dataGrid.style.display = 'grid';
+                    commercial.style.display = 'block';
+                    
+                    // Trigger animation
+                    setTimeout(() => commercial.style.opacity = '1', 50);
+                    
+                    // Reset discount to defaults depending on product just for demo
+                    descPanpharma.value = val === "400763" ? 24 : 11;
+                    
+                    calculate();
+                } else {
+                    currentProduct = null;
+                    errorMsg.style.display = 'block';
+                    dataGrid.style.display = 'none';
+                    commercial.style.opacity = '0';
+                    setTimeout(() => commercial.style.display = 'none', 300);
+                }
+            } else {
+                errorMsg.style.display = 'none';
+            }
+        });
+
+        descPanpharma.addEventListener('input', calculate);
+        descNazaria.addEventListener('input', calculate);
+
+    </script>
+</body>
+</html>
