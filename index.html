@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ERP de Bolso - Panpharma</title>
-    <!-- Importando o Banco de Dados -->
     <script src="db.js"></script>
-    <!-- Fontes modernas -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a365d;       /* Azul Panpharma Escuro */
-            --primary-light: #2b6cb0; /* Azul Panpharma Claro */
-            --secondary: #dd6b20;     /* Laranja Nazaria */
-            --success: #38a169;       /* Verde Lucro */
-            --bg-color: #edf2f7;      /* Fundo Cinza App */
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --secondary: #dd6b20;
+            --success: #38a169;
+            --bg-color: #edf2f7;
             --card-bg: #ffffff;
             --text-main: #2d3748;
             --text-muted: #718096;
@@ -25,7 +23,6 @@
         
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 50px; -webkit-font-smoothing: antialiased; }
         
-        /* Cabeçalho Premium */
         .app-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 25px 20px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 15px rgba(26, 54, 93, 0.2); margin-bottom: 25px; position: relative; }
         .app-header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
         .app-header p { font-size: 0.85rem; font-weight: 400; opacity: 0.9; margin-top: 5px; }
@@ -33,13 +30,11 @@
 
         .container { padding: 0 15px; max-width: 600px; margin: 0 auto; }
 
-        /* Cartões estilo iOS */
         .card { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid var(--border); }
         
         .section-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; }
         .section-title::before { content: ""; display: inline-block; width: 4px; height: 14px; background-color: var(--primary-light); margin-right: 8px; border-radius: 2px; }
 
-        /* Input de Pesquisa */
         .search-wrapper { position: relative; }
         .search-wrapper input { width: 100%; padding: 16px 20px; font-size: 1.2rem; font-weight: 600; border: 2px solid var(--border); border-radius: 12px; transition: all 0.2s; color: var(--primary); text-align: center; }
         .search-wrapper input:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.1); }
@@ -47,7 +42,6 @@
         
         #status-msg { text-align: center; font-size: 0.85rem; font-weight: 600; margin-top: 10px; color: #e53e3e; display: none; }
 
-        /* Tabela de Dados do Produto */
         .product-details { background: #f7fafc; border-radius: 12px; padding: 15px; margin-top: 15px; border: 1px dashed #cbd5e0; display: none; }
         .product-name { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; text-align: center; line-height: 1.3; }
         .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -55,11 +49,9 @@
         .detail-box span { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .detail-box strong { font-size: 1rem; color: var(--text-main); }
 
-        /* Área de Comparação */
         .battle-area { display: none; opacity: 0; transition: opacity 0.4s ease; }
         .competitor-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         
-        /* Colunas */
         .col-card { border-radius: 16px; overflow: hidden; border: 2px solid transparent; display: flex; flex-direction: column; }
         .col-panpharma { border-color: var(--primary); background: #f0f4f8; }
         .col-nazaria { border-color: var(--secondary); background: #fffaf0; }
@@ -70,7 +62,6 @@
 
         .col-body { padding: 15px 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; }
 
-        /* Inputs de Desconto e PF */
         .input-group { background: white; padding: 8px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
         .input-group label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
         .percent-box { display: flex; align-items: center; justify-content: center; position: relative; }
@@ -79,7 +70,6 @@
         .percent-box::after { content: "%"; position: absolute; right: 10px; font-weight: 800; color: #c05621; pointer-events: none; }
         .money-box::after { display: none; }
 
-        /* Linhas de Resultado */
         .math-line { display: flex; justify-content: space-between; font-size: 0.8rem; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
         .math-line span:first-child { color: var(--text-muted); font-weight: 600; }
         .math-line span:last-child { font-weight: 700; }
@@ -89,12 +79,10 @@
         .final-cost strong { display: block; font-size: 1.4rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
         .col-panpharma .final-cost strong { color: var(--primary); }
 
-        /* Caixa de Vantagem */
         .advantage-box { background: var(--success); color: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 10px 15px -3px rgba(56, 161, 105, 0.3); transition: background 0.3s; }
         .advantage-box.loss { background: #e53e3e; box-shadow: 0 10px 15px -3px rgba(229, 62, 62, 0.3); }
         .advantage-box p { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-bottom: 5px; }
         .advantage-box h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
-
     </style>
 </head>
 <body>
@@ -107,7 +95,6 @@
 
     <div class="container">
         
-        <!-- BUSCA DE PRODUTO -->
         <div class="card">
             <h2 class="section-title">Consultar Produto (Panpharma)</h2>
             <div class="search-wrapper">
@@ -130,7 +117,6 @@
             </div>
         </div>
 
-        <!-- BATALHA COMERCIAL -->
         <div class="battle-area" id="commercialSection">
             <h2 class="section-title">Batalha Comercial (Custo Final)</h2>
             
@@ -179,13 +165,17 @@
                         <div class="input-group">
                             <label>DESCONTO OFERTADO</label>
                             <div class="percent-box">
-                                <input type="number" id="descNaz" value="5" step="1">
+                                <input type="number" id="descNaz" value="8.5" step="0.1">
                             </div>
                         </div>
 
                         <div class="math-line" style="margin-top: 10px;">
                             <span>Líquido</span>
                             <span id="valLiqNaz">R$ 0,00</span>
+                        </div>
+                        <div class="math-line">
+                            <span>Imp. ST</span>
+                            <span id="valSTNaz">R$ 0,00</span>
                         </div>
                         
                         <div class="final-cost">
@@ -206,13 +196,11 @@
     </div>
 
     <script>
-        // DOM Elements
         const codigoInput = document.getElementById('codigoInput');
         const statusMsg = document.getElementById('status-msg');
         const productData = document.getElementById('productData');
         const commercialSection = document.getElementById('commercialSection');
         
-        // Inputs
         const descPan = document.getElementById('descPan');
         const descNaz = document.getElementById('descNaz');
         const pfNazaria = document.getElementById('pfNazaria');
@@ -225,31 +213,38 @@
             if (!currentProduct) return;
             const p = currentProduct;
 
-            // Variáveis Panpharma
+            // ---- PANPHARMA ----
             const dPan = parseFloat(descPan.value || 0) / 100;
             const repasse = p.r;
             const icmsOrigem = repasse === 0.1979 ? 0.04 : 0.12;
 
-            // Matemática Panpharma
             const liqPan = p.pf * (1 - dPan) * (1 - repasse);
             let stPan = 0;
             
             if (p.neu) {
-                stPan = 0; // Neutro
+                stPan = 0; 
             } else if (p.lib) {
                 const debito = liqPan * p.m;
                 stPan = Math.max(0, debito - (liqPan * icmsOrigem));
             } else {
-                stPan = Math.max(0, p.s - (liqPan * icmsOrigem)); // Pos/Neg com PMC
+                stPan = Math.max(0, p.s - (liqPan * icmsOrigem)); 
             }
             const finalPan = liqPan + stPan;
 
-            // Matemática Nazaria
+            // ---- NAZARIA ----
             const dNaz = parseFloat(descNaz.value || 0) / 100;
             const basePfNaz = pfNazaria.value ? parseFloat(pfNazaria.value.replace(',','.')) : p.pf;
             
             const liqNaz = basePfNaz * (1 - dNaz);
-            const finalNaz = liqNaz; // Nazaria fatura liquido dentro do estado para efeito de comparacao
+            let stNaz = 0;
+
+            // REGIME ESPECIAL MARANHÃO (Anexo 4.24):
+            // Atacadistas locais cobram exatamente 6% de ST sobre o valor líquido dos medicamentos.
+            if (!p.neu) { 
+                stNaz = liqNaz * 0.06;
+            }
+            
+            const finalNaz = liqNaz + stNaz;
 
             // Renderizar Panpharma
             document.getElementById('valLiqPan').innerText = formatMoney(liqPan);
@@ -258,6 +253,7 @@
 
             // Renderizar Nazaria
             document.getElementById('valLiqNaz').innerText = formatMoney(liqNaz);
+            document.getElementById('valSTNaz').innerText = formatMoney(stNaz);
             document.getElementById('valFinalNaz').innerText = formatMoney(finalNaz);
 
             // Vantagem
@@ -277,7 +273,6 @@
         codigoInput.addEventListener('input', (e) => {
             const val = e.target.value.trim();
             
-            // Garantir que a variavel "db" do ficheiro db.js foi carregada
             if (typeof db === 'undefined') {
                 statusMsg.innerText = "Erro: Banco de dados (db.js) não carregou.";
                 statusMsg.style.display = 'block';
@@ -297,7 +292,6 @@
                     productData.style.display = 'block';
                     commercialSection.style.display = 'block';
                     
-                    // Reset inputs contextuais
                     pfNazaria.value = "";
                     descPan.value = 11;
                     descNaz.value = 5;
@@ -320,7 +314,6 @@
             }
         });
 
-        // Listeners para re-cálculo imediato
         descPan.addEventListener('input', calcular);
         descNaz.addEventListener('input', calcular);
         pfNazaria.addEventListener('input', calcular);
