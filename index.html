@@ -98,6 +98,14 @@
         .detail-box span { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
         .detail-box strong { font-size: 1.2rem; color: #FFF; font-family: 'Montserrat', sans-serif; }
 
+        /* Campo de Quantidade */
+        .qty-wrapper { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px; background: var(--input-bg); border-radius: 16px; padding: 14px 20px; border: 1px solid var(--border); }
+        .qty-wrapper label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #FFF; font-size: 1.3rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; line-height: 1; }
+        .qty-btn:hover, .qty-btn:active { background: var(--accent-blue); border-color: var(--accent-blue); }
+        #qtyInput { width: 60px; text-align: center; font-size: 1.3rem; font-weight: 800; font-family: 'Montserrat', sans-serif; color: #FFF; border: 1px solid var(--accent-blue); background: var(--card-bg); border-radius: 10px; padding: 6px 4px; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+
         /* Comparativo Comercial */
         .battle-area { display: none; opacity: 0; transition: opacity 0.5s ease; }
         .competitor-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
@@ -184,6 +192,15 @@
                         <strong id="lblPMC">R$ 0,00</strong>
                     </div>
                 </div>
+
+                <div class="qty-wrapper">
+                    <label>Quantidade</label>
+                    <div class="qty-controls">
+                        <button class="qty-btn" id="qtyMinus">−</button>
+                        <input type="number" id="qtyInput" value="1" min="1" max="9999">
+                        <button class="qty-btn" id="qtyPlus">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -259,6 +276,7 @@
         const descPan = document.getElementById('descPan');
         const descNaz = document.getElementById('descNaz');
         const pfNazaria = document.getElementById('pfNazaria');
+        const qtyInput = document.getElementById('qtyInput');
 
         let currentProduct = null;
         let debounceTimer;
@@ -269,6 +287,8 @@
         const calcular = () => {
             if (!currentProduct) return;
             const p = currentProduct;
+
+            const qty = Math.max(1, parseInt(qtyInput.value) || 1);
 
             // Panpharma
             const dPan = parseFloat(descPan.value || 0) / 100;
@@ -298,17 +318,17 @@
             
             const finalNaz = liqNaz + stNaz;
 
-            // Atualiza UI
+            // Atualiza UI (unitário nas linhas de detalhe, total no boleto)
             document.getElementById('valLiqPan').innerText = formatMoney(liqPan);
             document.getElementById('valSTPan').innerText = formatMoney(stPan);
-            document.getElementById('valFinalPan').innerText = formatMoney(finalPan);
+            document.getElementById('valFinalPan').innerText = formatMoney(finalPan * qty);
 
             document.getElementById('valLiqNaz').innerText = formatMoney(liqNaz);
             document.getElementById('valSTNaz').innerText = formatMoney(stNaz);
-            document.getElementById('valFinalNaz').innerText = formatMoney(finalNaz);
+            document.getElementById('valFinalNaz').innerText = formatMoney(finalNaz * qty);
 
             // Decisão
-            const vantagem = finalNaz - finalPan;
+            const vantagem = (finalNaz - finalPan) * qty;
             document.getElementById('valVantagem').innerText = formatMoney(vantagem);
             
             const box = document.getElementById('boxVantagem');
@@ -423,6 +443,7 @@
                     pfNazaria.value = "";
                     descPan.value = 11;
                     descNaz.value = 8.5;
+                    qtyInput.value = 1;
 
                     setTimeout(() => commercialSection.style.opacity = '1', 50);
                     calcular();
@@ -441,6 +462,20 @@
         descPan.addEventListener('input', calcular);
         descNaz.addEventListener('input', calcular);
         pfNazaria.addEventListener('input', calcular);
+
+        // Quantidade
+        qtyInput.addEventListener('input', () => {
+            if (parseInt(qtyInput.value) < 1 || qtyInput.value === '') qtyInput.value = 1;
+            calcular();
+        });
+        document.getElementById('qtyMinus').addEventListener('click', () => {
+            const v = parseInt(qtyInput.value) || 1;
+            if (v > 1) { qtyInput.value = v - 1; calcular(); }
+        });
+        document.getElementById('qtyPlus').addEventListener('click', () => {
+            qtyInput.value = (parseInt(qtyInput.value) || 1) + 1;
+            calcular();
+        });
         
         // Retornar as bordas do input quando o dropdown fechar
         codigoInput.addEventListener('blur', () => {
