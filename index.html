@@ -3,182 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ERP de Bolso - Panpharma</title>
+    <title>ERP de Bolso · Panpharma</title>
     <script src="db.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* ═══════════════════════════════════════════
+           TOKENS DE DESIGN
+        ═══════════════════════════════════════════ */
         :root {
-            --bg-color: #0B1121;
-            --card-bg: #1E293B;
-            --primary-blue: #1D4ED8;
-            --accent-blue: #3B82F6;
-            --secondary: #EA580C;
-            --success: #10B981;
-            --danger: #EF4444;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border: #334155;
-            --input-bg: #0F172A;
-            --radius: 20px;
+            --bg:          #080E1C;
+            --surface-1:   #0F1829;
+            --surface-2:   #162035;
+            --surface-3:   #1C2A44;
+
+            --blue-900:    #0B1F5C;
+            --blue-700:    #1D4ED8;
+            --blue-500:    #3B82F6;
+            --blue-300:    #93C5FD;
+            --blue-100:    #DBEAFE;
+
+            --orange-700:  #9A3412;
+            --orange-500:  #EA580C;
+            --orange-300:  #FDBA74;
+
+            --green-700:   #065F46;
+            --green-500:   #10B981;
+            --green-300:   #6EE7B7;
+
+            --red-700:     #991B1B;
+            --red-500:     #EF4444;
+            --red-300:     #FCA5A5;
+
+            --text-100:    #F8FAFC;
+            --text-300:    #CBD5E1;
+            --text-500:    #64748B;
+            --text-700:    #334155;
+
+            --border:      rgba(255,255,255,0.07);
+            --border-blue: rgba(59,130,246,0.35);
+            --radius-xs:   8px;
+            --radius-sm:   12px;
+            --radius-md:   18px;
+            --radius-lg:   24px;
+            --radius-xl:   32px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Inter', sans-serif; padding-bottom: 50px; -webkit-font-smoothing: antialiased; }
+        /* ═══════════════════════════════════════════
+           RESET & BASE
+        ═══════════════════════════════════════════ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        h1, h2, h3, .math-line span:last-child, .final-cost strong, .percent-box input { font-family: 'Montserrat', sans-serif; }
+        html { scroll-behavior: smooth; }
 
+        body {
+            background: var(--bg);
+            color: var(--text-100);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100dvh;
+            padding-bottom: 60px;
+        }
+
+        /* ═══════════════════════════════════════════
+           HEADER
+        ═══════════════════════════════════════════ */
         .app-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            padding: 35px 20px 25px; text-align: center;
-            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 30px -10px rgba(29, 78, 216, 0.4);
-            margin-bottom: 30px; position: relative; border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(160deg, #0A1535 0%, #0F2360 55%, #132B7A 100%);
+            padding: 44px 20px 36px;
+            text-align: center;
+            border-bottom: 1px solid rgba(59,130,246,0.25);
         }
-        .app-header h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; color: #FFFFFF; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .app-header p { font-size: 0.85rem; font-weight: 500; color: #93C5FD; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        .badge-ma { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); color: #F8FAFC; border: 1px solid rgba(255,255,255,0.2); font-size: 0.65rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; letter-spacing: 1px;}
 
-        .container { padding: 0 15px; max-width: 600px; margin: 0 auto; }
+        /* Brilho decorativo no topo */
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; left: 50%;
+            transform: translateX(-50%);
+            width: 320px; height: 200px;
+            background: radial-gradient(ellipse, rgba(59,130,246,0.22) 0%, transparent 70%);
+            pointer-events: none;
+        }
 
-        .card { background: var(--card-bg); border-radius: var(--radius); padding: 24px 20px; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); border: 1px solid var(--border); }
-        
-        .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent-blue); font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; }
-        .section-title::before, .section-title::after { content: ""; display: inline-block; width: 20px; height: 2px; background-color: var(--accent-blue); margin: 0 10px; border-radius: 2px; opacity: 0.5;}
+        .header-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--blue-700), #1E40AF);
+            border-radius: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 24px rgba(29,78,216,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+        }
 
-        /* Barra de Busca Inteligente */
+        .header-logo svg { width: 28px; height: 28px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .app-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #FFF;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .app-header h1 span { color: var(--blue-300); }
+
+        .app-header p {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--blue-300);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .badge-ma {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--blue-300);
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 5px 11px;
+            border-radius: 20px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════════════════
+           LAYOUT
+        ═══════════════════════════════════════════ */
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ═══════════════════════════════════════════
+           CARDS BASE
+        ═══════════════════════════════════════════ */
+        .card {
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset;
+        }
+
+        /* ═══════════════════════════════════════════
+           SECTION LABEL
+        ═══════════════════════════════════════════ */
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--blue-500);
+            margin-bottom: 16px;
+        }
+        .section-label::before {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(59,130,246,0.4));
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to left, transparent, rgba(59,130,246,0.4));
+        }
+
+        /* ═══════════════════════════════════════════
+           BARRA DE BUSCA
+        ═══════════════════════════════════════════ */
+        .search-card {
+            margin-top: -1px;
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        /* Ajuste: o card de busca fica logo abaixo do header */
+        .container { padding-top: 20px; }
+
         .search-wrapper { position: relative; }
-        .search-wrapper input { 
-            width: 100%; padding: 20px; font-size: 1.1rem; font-weight: 700; 
-            border: 2px solid var(--border); border-radius: var(--radius); 
-            background: var(--input-bg); color: #FFF; text-align: center; 
-            transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .search-wrapper input:focus { outline: none; border-color: var(--accent-blue); background: #0B1121; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), inset 0 2px 4px rgba(0,0,0,0.3); border-bottom-left-radius: 0; border-bottom-right-radius: 0;}
-        .search-wrapper input::placeholder { color: #475569; font-weight: 600; font-size: 0.95rem; }
-        #status-msg { text-align: center; font-size: 0.85rem; font-weight: 600; margin-top: 15px; color: var(--danger); display: none; }
 
-        /* Lista de Sugestões (Dropdown) */
-        .suggestions-dropdown {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: var(--card-bg); border: 2px solid var(--accent-blue); border-top: none;
-            border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
-            max-height: 280px; overflow-y: auto; z-index: 100; display: none;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        .search-icon {
+            position: absolute;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-500);
+            pointer-events: none;
+            transition: color 0.2s;
+            z-index: 2;
         }
-        /* Custom Scrollbar */
-        .suggestions-dropdown::-webkit-scrollbar { width: 6px; }
-        .suggestions-dropdown::-webkit-scrollbar-track { background: var(--card-bg); border-bottom-right-radius: var(--radius); }
-        .suggestions-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        .search-wrapper:focus-within .search-icon { color: var(--blue-500); }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 17px 18px 17px 46px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-2);
+            color: var(--text-100);
+            transition: all 0.25s ease;
+            -webkit-appearance: none;
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            background: var(--surface-3);
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .search-wrapper input::placeholder { color: var(--text-500); font-weight: 500; }
+
+        #status-msg {
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-top: 14px;
+            color: var(--red-500);
+            display: none;
+            padding: 10px;
+            background: rgba(239,68,68,0.08);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+
+        /* ═══════════════════════════════════════════
+           DROPDOWN DE SUGESTÕES
+        ═══════════════════════════════════════════ */
+        .suggestions-dropdown {
+            position: absolute;
+            top: calc(100%); left: 0; right: 0;
+            background: var(--surface-2);
+            border: 1.5px solid var(--blue-500);
+            border-top: none;
+            border-bottom-left-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+            max-height: 290px;
+            overflow-y: auto;
+            z-index: 200;
+            display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar { width: 4px; }
+        .suggestions-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .suggestions-dropdown::-webkit-scrollbar-thumb { background: var(--text-700); border-radius: 4px; }
 
         .suggestion-item {
-            display: flex; align-items: center; padding: 12px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 11px 14px;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
         }
         .suggestion-item:last-child { border-bottom: none; }
-        .suggestion-item:hover, .suggestion-item:active { background: var(--input-bg); }
-        
-        .sugg-img { width: 45px; height: 45px; background: white; border-radius: 8px; margin-right: 15px; object-fit: contain; padding: 3px; flex-shrink: 0; }
-        .sugg-info { display: flex; flex-direction: column; flex-grow: 1; }
-        .sugg-name { font-size: 0.85rem; font-weight: 700; color: #FFF; line-height: 1.2; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: left; }
-        .sugg-code { font-size: 0.7rem; color: var(--accent-blue); font-weight: 700; text-align: left; }
+        .suggestion-item:hover, .suggestion-item:active { background: var(--surface-3); }
 
-        /* Área do Produto Escolhido */
-        .product-display { display: none; margin-top: 25px; animation: slideUp 0.4s ease-out; }
-        .product-header { display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed var(--border); }
-        
-        .img-container { width: 140px; height: 140px; background: #FFFFFF; border-radius: 20px; padding: 8px; margin-bottom: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); border: 3px solid var(--input-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
-        .img-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .product-info { width: 100%; }
-        .product-name { font-size: 1.15rem; font-weight: 800; color: #FFF; line-height: 1.4; margin-bottom: 6px; }
-        .product-ean { font-size: 0.75rem; color: var(--accent-blue); font-weight: 700; letter-spacing: 1px; background: rgba(59, 130, 246, 0.1); padding: 4px 10px; border-radius: 8px; display: inline-block;}
+        .sugg-img {
+            width: 44px; height: 44px;
+            background: white;
+            border-radius: var(--radius-xs);
+            object-fit: contain;
+            padding: 3px;
+            flex-shrink: 0;
+        }
 
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .detail-box { background: var(--input-bg); padding: 15px 10px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
-        .detail-box span { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
-        .detail-box strong { font-size: 1.2rem; color: #FFF; font-family: 'Montserrat', sans-serif; }
+        .sugg-info { flex: 1; min-width: 0; }
 
-        /* Campo de Quantidade */
-        .qty-wrapper { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px; background: var(--input-bg); border-radius: 16px; padding: 14px 20px; border: 1px solid var(--border); }
-        .qty-wrapper label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .sugg-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-100);
+            line-height: 1.3;
+            margin-bottom: 3px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .sugg-code {
+            font-size: 0.68rem;
+            color: var(--blue-500);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* ═══════════════════════════════════════════
+           PRODUTO SELECIONADO
+        ═══════════════════════════════════════════ */
+        .product-display {
+            display: none;
+            margin-top: 20px;
+            animation: fadeUp 0.35s ease-out;
+        }
+
+        .product-header {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding-bottom: 18px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .img-container {
+            flex-shrink: 0;
+            width: 90px; height: 90px;
+            background: #FFFFFF;
+            border-radius: var(--radius-sm);
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.08);
+        }
+
+        .img-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .product-info { flex: 1; min-width: 0; }
+
+        .product-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-100);
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .product-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .tag-blue   { background: rgba(59,130,246,0.15); color: var(--blue-300); border: 1px solid rgba(59,130,246,0.25); }
+        .tag-muted  { background: rgba(255,255,255,0.05); color: var(--text-300); border: 1px solid var(--border); }
+
+        /* Grid de detalhes */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .detail-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .detail-box span {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-500);
+            margin-bottom: 6px;
+        }
+
+        .detail-box strong {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-100);
+        }
+
+        /* Quantidade */
+        .qty-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+        }
+
+        .qty-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-500);
+        }
+
         .qty-controls { display: flex; align-items: center; gap: 10px; }
-        .qty-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: #FFF; font-size: 1.3rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; line-height: 1; }
-        .qty-btn:hover, .qty-btn:active { background: var(--accent-blue); border-color: var(--accent-blue); }
-        #qtyInput { width: 60px; text-align: center; font-size: 1.3rem; font-weight: 800; font-family: 'Montserrat', sans-serif; color: #FFF; border: 1px solid var(--accent-blue); background: var(--card-bg); border-radius: 10px; padding: 6px 4px; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
-        /* Comparativo Comercial */
-        .battle-area { display: none; opacity: 0; transition: opacity 0.5s ease; }
-        .competitor-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-        
-        .col-card { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,0.2);}
-        .col-header { padding: 15px 10px; text-align: center; font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; color: #FFF; text-transform: uppercase;}
-        .col-panpharma .col-header { background: linear-gradient(to right, #1E3A8A, var(--primary-blue)); }
-        .col-nazaria .col-header { background: linear-gradient(to right, #9A3412, var(--secondary)); }
+        .qty-btn {
+            width: 36px; height: 36px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            background: var(--surface-3);
+            color: var(--text-100);
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+            line-height: 1;
+            -webkit-appearance: none;
+        }
+        .qty-btn:active { transform: scale(0.9); background: var(--blue-700); border-color: var(--blue-500); }
 
-        .col-body { padding: 16px 12px; display: flex; flex-direction: column; gap: 16px; flex-grow: 1; background: var(--input-bg);}
+        #qtyInput {
+            width: 58px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-100);
+            border: 1.5px solid var(--blue-500);
+            background: var(--surface-3);
+            border-radius: var(--radius-xs);
+            padding: 6px 4px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+        #qtyInput::-webkit-inner-spin-button,
+        #qtyInput::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-        .input-group label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-bottom: 8px; text-align: center; letter-spacing: 0.5px;}
-        .percent-box { display: flex; align-items: center; justify-content: center; position: relative; }
-        .percent-box input { width: 100%; text-align: center; font-size: 1.4rem; color: #FFF; border: 1px solid var(--border); background: var(--card-bg); border-radius: 12px; padding: 12px 25px 12px 10px; outline: none; transition: all 0.2s; }
-        .col-panpharma .percent-box input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
-        .col-nazaria .percent-box input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2); }
-        
-        .percent-box::after { content: "%"; position: absolute; right: 15px; font-weight: 800; color: var(--text-muted); font-size: 1.2rem; pointer-events: none; }
+        /* ═══════════════════════════════════════════
+           BATALHA COMERCIAL
+        ═══════════════════════════════════════════ */
+        .battle-area { display: none; opacity: 0; transition: opacity 0.4s ease; }
+
+        .competitor-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        /* ---- CARD DE COLUNA ---- */
+        .col-card {
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .col-header {
+            padding: 13px 10px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.72rem;
+            letter-spacing: 1.2px;
+            color: #FFF;
+            text-transform: uppercase;
+        }
+
+        .col-panpharma .col-header {
+            background: linear-gradient(120deg, #0E2270 0%, #1D4ED8 100%);
+            border-bottom: 1px solid rgba(59,130,246,0.4);
+        }
+
+        .col-nazaria .col-header {
+            background: linear-gradient(120deg, #7C2D12 0%, #EA580C 100%);
+            border-bottom: 1px solid rgba(234,88,12,0.4);
+        }
+
+        .col-body {
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex-grow: 1;
+            background: var(--surface-2);
+        }
+
+        /* Inputs de percentual / valor */
+        .input-group label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-500);
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .percent-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .percent-box input {
+            width: 100%;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-100);
+            border: 1.5px solid var(--border);
+            background: var(--surface-3);
+            border-radius: var(--radius-sm);
+            padding: 11px 26px 11px 10px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+        .percent-box input::-webkit-inner-spin-button,
+        .percent-box input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        .col-panpharma .percent-box input:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+        }
+        .col-nazaria .percent-box input:focus {
+            border-color: var(--orange-500);
+            box-shadow: 0 0 0 3px rgba(234,88,12,0.18);
+        }
+
+        .percent-box::after {
+            content: "%";
+            position: absolute;
+            right: 12px;
+            font-weight: 800;
+            color: var(--text-500);
+            font-size: 1rem;
+            pointer-events: none;
+        }
         .money-box::after { display: none; }
-        .percent-box input.money-input { padding: 12px; font-size: 1.2rem; }
+        .percent-box input.money-input { padding: 11px 10px; font-size: 1.1rem; }
 
-        .math-wrapper { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05);}
-        .math-line { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 8px; }
-        .math-line:last-child { margin-bottom: 0; }
-        .math-line span:first-child { color: var(--text-muted); font-weight: 600; }
-        .math-line span:last-child { font-size: 0.85rem; }
+        /* Bloco de matemática */
+        .math-wrapper {
+            background: rgba(0,0,0,0.25);
+            border-radius: var(--radius-xs);
+            padding: 10px 11px;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
 
-        .final-cost { text-align: center; margin-top: auto; padding-top: 15px; border-top: 1px dashed var(--border); }
-        .final-cost span { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
-        .final-cost strong { display: block; font-size: 1.6rem; color: #FFF; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
-        .col-panpharma .final-cost strong { color: #60A5FA; }
-        .col-nazaria .final-cost strong { color: #FDBA74; }
+        .math-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.72rem;
+        }
 
-        /* Caixa de Decisão */
-        .advantage-box { background: linear-gradient(135deg, #047857, var(--success)); color: white; border-radius: var(--radius); padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.4); transition: all 0.4s; border: 1px solid #34D399;}
-        .advantage-box.loss { background: linear-gradient(135deg, #991B1B, var(--danger)); box-shadow: 0 10px 30px -5px rgba(239, 68, 68, 0.4); border-color: #F87171;}
-        .advantage-box p { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9; margin-bottom: 8px; }
-        .advantage-box h2 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .math-line span:first-child { color: var(--text-500); font-weight: 500; }
+        .math-line span:last-child  { color: var(--text-300); font-weight: 700; font-size: 0.78rem; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 380px) { .competitor-columns { grid-template-columns: 1fr; } .col-card { margin-bottom: 5px; } }
+        /* Custo Final */
+        .final-cost {
+            text-align: center;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255,255,255,0.08);
+            margin-top: auto;
+        }
+
+        .final-cost span {
+            display: block;
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-500);
+            margin-bottom: 4px;
+        }
+
+        .final-cost strong {
+            font-family: 'Montserrat', sans-serif;
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .col-panpharma .final-cost strong { color: var(--blue-300); }
+        .col-nazaria   .final-cost strong { color: var(--orange-300); }
+
+        /* ═══════════════════════════════════════════
+           CAIXA DE DECISÃO
+        ═══════════════════════════════════════════ */
+        .advantage-box {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            padding: 28px 20px 24px;
+            text-align: center;
+            transition: background 0.4s, box-shadow 0.4s;
+
+            background: linear-gradient(140deg, var(--green-700), #047857 50%, #059669);
+            box-shadow: 0 12px 36px -4px rgba(16,185,129,0.4), 0 0 0 1px rgba(16,185,129,0.2);
+        }
+
+        .advantage-box::before {
+            content: '';
+            position: absolute;
+            top: -40px; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 100px;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .advantage-box.loss {
+            background: linear-gradient(140deg, var(--red-700), #991B1B 50%, #B91C1C);
+            box-shadow: 0 12px 36px -4px rgba(239,68,68,0.4), 0 0 0 1px rgba(239,68,68,0.2);
+        }
+
+        .advantage-box p {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 6px;
+        }
+
+        .advantage-box h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2.2rem, 10vw, 3.2rem);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            color: #FFF;
+            line-height: 1;
+            text-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .advantage-box .sub {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ═══════════════════════════════════════════
+           ANIMAÇÕES
+        ═══════════════════════════════════════════ */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pop {
+            0%   { transform: scale(0.95); }
+            60%  { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .advantage-box { animation: pop 0.4s ease-out; }
+
+        /* ═══════════════════════════════════════════
+           RESPONSIVO - TELAS MUITO PEQUENAS
+        ═══════════════════════════════════════════ */
+        @media (max-width: 360px) {
+            .competitor-columns { grid-template-columns: 1fr; }
+            .product-header { flex-direction: column; align-items: center; text-align: center; }
+            .product-tags { justify-content: center; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ═══ HEADER ═══ -->
     <header class="app-header">
-        <span class="badge-ma">SEFAZ MA</span>
-        <h1>ERP DE BOLSO</h1>
-        <p>Motor Tributário Panpharma</p>
+        <span class="badge-ma">SEFAZ · MA</span>
+        <div class="header-logo">
+            <!-- Ícone: comprimido / caixa -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="6" width="18" height="13" rx="2" stroke-width="1.8"/>
+                <path d="M3 10h18" stroke-width="1.8"/>
+                <path d="M8 14h8" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 12v4" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1>ERP DE <span>BOLSO</span></h1>
+        <p>Motor Tributário · Panpharma</p>
     </header>
 
     <div class="container">
-        
-        <!-- BUSCA -->
-        <div class="card" style="z-index: 50; position: relative;">
-            <h2 class="section-title">Consultar Produto</h2>
+
+        <!-- ═══ BUSCA ═══ -->
+        <div class="card" style="position: relative; z-index: 50;">
+            <div class="section-label">Consultar Produto</div>
+
             <div class="search-wrapper">
-                <!-- Mudado para type="text" para permitir pesquisa por letras -->
-                <input type="text" id="codigoInput" placeholder="Busque por Nome ou Código..." autocomplete="off">
-                <!-- Dropdown de Sugestões -->
+                <!-- Ícone de lupa -->
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+
+                <input type="text" id="codigoInput" placeholder="Nome ou código do produto..." autocomplete="off" inputmode="text">
+
                 <div id="suggestions" class="suggestions-dropdown"></div>
-                <div id="status-msg">Produto não localizado na base.</div>
             </div>
-            
+
+            <div id="status-msg">Nenhum produto localizado na base.</div>
+
+            <!-- Produto encontrado -->
             <div class="product-display" id="productData">
+
                 <div class="product-header">
                     <div class="img-container">
                         <img id="imgProduto" src="" alt="Produto" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3374/3374345.png';">
                     </div>
                     <div class="product-info">
                         <div class="product-name" id="lblDescricao">NOME DO PRODUTO</div>
-                        <div class="product-ean" id="lblEAN">EAN: 0000000000000</div>
-                        <div style="font-size: 0.7rem; color: #94A3B8; margin-top: 6px; font-weight: 700;">CÓD: <span id="lblCod" style="color:#FFF;"></span></div>
+                        <div class="product-tags">
+                            <span class="tag tag-blue" id="lblEAN">EAN: —</span>
+                            <span class="tag tag-muted">CÓD: <span id="lblCod"></span></span>
+                        </div>
                     </div>
                 </div>
 
@@ -194,77 +778,87 @@
                 </div>
 
                 <div class="qty-wrapper">
-                    <label>Quantidade</label>
+                    <span class="qty-label">Quantidade</span>
                     <div class="qty-controls">
-                        <button class="qty-btn" id="qtyMinus">−</button>
-                        <input type="number" id="qtyInput" value="1" min="1" max="9999">
-                        <button class="qty-btn" id="qtyPlus">+</button>
+                        <button class="qty-btn" id="qtyMinus" aria-label="Diminuir">−</button>
+                        <input type="number" id="qtyInput" value="1" min="1" max="9999" inputmode="numeric">
+                        <button class="qty-btn" id="qtyPlus" aria-label="Aumentar">+</button>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- BATALHA -->
+            </div>
+        </div><!-- /card busca -->
+
+        <!-- ═══ BATALHA COMERCIAL ═══ -->
         <div class="battle-area" id="commercialSection">
-            <h2 class="section-title">Batalha no Balcão</h2>
-            
-            <div class="competitor-columns">
-                <!-- PANPHARMA -->
-                <div class="col-card col-panpharma">
-                    <div class="col-header">PANPHARMA (Nós)</div>
-                    <div class="col-body">
-                        <div class="input-group">
-                            <label>DESCONTO OFERECIDO</label>
-                            <div class="percent-box">
-                                <input type="number" id="descPan" value="11" step="1">
+
+            <div class="card" style="padding: 0; overflow: hidden; background: transparent; border: none; box-shadow: none;">
+                <div class="section-label" style="margin-bottom: 14px;">Batalha no Balcão</div>
+
+                <div class="competitor-columns">
+
+                    <!-- PANPHARMA -->
+                    <div class="col-card col-panpharma">
+                        <div class="col-header">PANPHARMA · Nós</div>
+                        <div class="col-body">
+                            <div class="input-group">
+                                <label>Desconto Oferecido</label>
+                                <div class="percent-box">
+                                    <input type="number" id="descPan" value="11" step="1" inputmode="decimal">
+                                </div>
                             </div>
-                        </div>
-                        <div class="math-wrapper">
-                            <div class="math-line"><span>Líquido:</span><span id="valLiqPan">R$ 0,00</span></div>
-                            <div class="math-line"><span>Imposto ST:</span><span id="valSTPan">R$ 0,00</span></div>
-                        </div>
-                        <div class="final-cost">
-                            <span>CUSTO NO BOLETO</span>
-                            <strong id="valFinalPan">R$ 0,00</strong>
+                            <div class="math-wrapper">
+                                <div class="math-line"><span>Líquido</span><span id="valLiqPan">R$ 0,00</span></div>
+                                <div class="math-line"><span>Imposto ST</span><span id="valSTPan">R$ 0,00</span></div>
+                            </div>
+                            <div class="final-cost">
+                                <span>Custo no Boleto</span>
+                                <strong id="valFinalPan">R$ 0,00</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- NAZARIA -->
-                <div class="col-card col-nazaria">
-                    <div class="col-header">NAZÁRIA (Eles)</div>
-                    <div class="col-body">
-                        <div class="input-group">
-                            <label>PF DELES (Se diferente)</label>
-                            <div class="percent-box money-box">
-                                <input type="number" id="pfNazaria" placeholder="0,00" class="money-input">
+                    <!-- NAZÁRIA -->
+                    <div class="col-card col-nazaria">
+                        <div class="col-header">NAZÁRIA · Eles</div>
+                        <div class="col-body">
+                            <div class="input-group">
+                                <label>PF Deles (opcional)</label>
+                                <div class="percent-box money-box">
+                                    <input type="number" id="pfNazaria" placeholder="0,00" class="money-input" inputmode="decimal">
+                                </div>
                             </div>
-                        </div>
-                        <div class="input-group">
-                            <label>DESCONTO DELES</label>
-                            <div class="percent-box">
-                                <input type="number" id="descNaz" value="8.5" step="0.1">
+                            <div class="input-group">
+                                <label>Desconto Deles</label>
+                                <div class="percent-box">
+                                    <input type="number" id="descNaz" value="8.5" step="0.1" inputmode="decimal">
+                                </div>
                             </div>
-                        </div>
-                        <div class="math-wrapper">
-                            <div class="math-line"><span>Líquido:</span><span id="valLiqNaz">R$ 0,00</span></div>
-                            <div class="math-line"><span>Imposto ST:</span><span id="valSTNaz">R$ 0,00</span></div>
-                        </div>
-                        <div class="final-cost">
-                            <span>CUSTO NO BOLETO</span>
-                            <strong id="valFinalNaz">R$ 0,00</strong>
+                            <div class="math-wrapper">
+                                <div class="math-line"><span>Líquido</span><span id="valLiqNaz">R$ 0,00</span></div>
+                                <div class="math-line"><span>Imposto ST</span><span id="valSTNaz">R$ 0,00</span></div>
+                            </div>
+                            <div class="final-cost">
+                                <span>Custo no Boleto</span>
+                                <strong id="valFinalNaz">R$ 0,00</strong>
+                            </div>
                         </div>
                     </div>
+
+                </div><!-- /competitor-columns -->
+
+                <!-- DECISÃO -->
+                <div class="advantage-box" id="boxVantagem">
+                    <p id="lblVantagem">Panpharma Mais Barata em:</p>
+                    <h2 id="valVantagem">R$ 0,00</h2>
+                    <div class="sub">por unidade × quantidade</div>
                 </div>
+
             </div>
 
-            <!-- VANTAGEM -->
-            <div class="advantage-box" id="boxVantagem">
-                <p>Lucro Extra Panpharma (Caixa)</p>
-                <h2 id="valVantagem">R$ 0,00</h2>
-            </div>
-        </div>
-    </div>
+        </div><!-- /battle-area -->
+
+    </div><!-- /container -->
 
     <script>
         const codigoInput = document.getElementById('codigoInput');
@@ -272,18 +866,18 @@
         const statusMsg = document.getElementById('status-msg');
         const productData = document.getElementById('productData');
         const commercialSection = document.getElementById('commercialSection');
-        
-        const descPan = document.getElementById('descPan');
-        const descNaz = document.getElementById('descNaz');
+
+        const descPan  = document.getElementById('descPan');
+        const descNaz  = document.getElementById('descNaz');
         const pfNazaria = document.getElementById('pfNazaria');
-        const qtyInput = document.getElementById('qtyInput');
+        const qtyInput  = document.getElementById('qtyInput');
 
         let currentProduct = null;
         let debounceTimer;
 
         const formatMoney = (val) => "R$ " + val.toFixed(2).replace('.', ',');
 
-        // Lógica Matemática de Batalha (Manteve-se blindada)
+        // ─── LÓGICA TRIBUTÁRIA (blindada — não alterar) ───────────────────────
         const calcular = () => {
             if (!currentProduct) return;
             const p = currentProduct;
@@ -297,69 +891,70 @@
 
             const liqPan = p.pf * (1 - dPan) * (1 - repasse);
             let stPan = 0;
-            
+
             if (p.neu) {
-                stPan = 0; 
+                stPan = 0;
             } else if (p.lib) {
                 const debito = liqPan * p.m;
                 stPan = Math.max(0, debito - (liqPan * icmsOrigem));
             } else {
-                stPan = Math.max(0, p.s - (liqPan * icmsOrigem)); 
+                stPan = Math.max(0, p.s - (liqPan * icmsOrigem));
             }
             const finalPan = liqPan + stPan;
 
-            // Nazaria
+            // Nazária
             const dNaz = parseFloat(descNaz.value || 0) / 100;
-            const basePfNaz = pfNazaria.value ? parseFloat(pfNazaria.value.replace(',','.')) : p.pf;
-            
+            const basePfNaz = pfNazaria.value ? parseFloat(pfNazaria.value.replace(',', '.')) : p.pf;
+
             const liqNaz = basePfNaz * (1 - dNaz);
             let stNaz = 0;
             if (!p.neu) stNaz = liqNaz * 0.06; // Regime Especial MA
-            
+
             const finalNaz = liqNaz + stNaz;
 
-            // Atualiza UI (unitário nas linhas de detalhe, total no boleto)
-            document.getElementById('valLiqPan').innerText = formatMoney(liqPan);
-            document.getElementById('valSTPan').innerText = formatMoney(stPan);
+            // Atualiza UI
+            document.getElementById('valLiqPan').innerText  = formatMoney(liqPan);
+            document.getElementById('valSTPan').innerText   = formatMoney(stPan);
             document.getElementById('valFinalPan').innerText = formatMoney(finalPan * qty);
 
-            document.getElementById('valLiqNaz').innerText = formatMoney(liqNaz);
-            document.getElementById('valSTNaz').innerText = formatMoney(stNaz);
+            document.getElementById('valLiqNaz').innerText  = formatMoney(liqNaz);
+            document.getElementById('valSTNaz').innerText   = formatMoney(stNaz);
             document.getElementById('valFinalNaz').innerText = formatMoney(finalNaz * qty);
 
             // Decisão
             const vantagem = (finalNaz - finalPan) * qty;
-            document.getElementById('valVantagem').innerText = formatMoney(vantagem);
-            
+            document.getElementById('valVantagem').innerText = formatMoney(Math.abs(vantagem));
+
             const box = document.getElementById('boxVantagem');
+            const lbl = document.getElementById('lblVantagem');
             if (vantagem >= 0) {
                 box.classList.remove('loss');
-                box.querySelector('p').innerText = "Panpharma Mais Barata em:";
+                lbl.innerText = "Panpharma Mais Barata em:";
             } else {
                 box.classList.add('loss');
-                box.querySelector('p').innerText = "Panpharma Mais Cara em:";
+                lbl.innerText = "Panpharma Mais Cara em:";
             }
         };
 
-        // FECHAR DROP DOWN SE CLICAR FORA
+        // ─── FECHAR DROPDOWN SE CLICAR FORA ──────────────────────────────────
         document.addEventListener('click', (e) => {
             if (!document.querySelector('.search-wrapper').contains(e.target)) {
                 suggestionsBox.style.display = 'none';
+                resetSearchRadius();
             }
         });
 
-        // MECANISMO DE BUSCA INTELIGENTE
+        // ─── BUSCA COM DEBOUNCE ───────────────────────────────────────────────
         codigoInput.addEventListener('input', (e) => {
             clearTimeout(debounceTimer);
             const val = e.target.value.trim().toUpperCase();
-            
+
             if (typeof db === 'undefined') {
                 statusMsg.innerText = "Erro crítico: Base de dados indisponível.";
                 statusMsg.style.display = 'block';
                 return;
             }
 
-            // Só ativa a pesquisa após 3 letras ou números
             if (val.length < 3) {
                 suggestionsBox.style.display = 'none';
                 productData.style.display = 'none';
@@ -370,12 +965,10 @@
 
             debounceTimer = setTimeout(() => {
                 let matches = [];
-                // Percorrer a base para encontrar correspondências (Nome ou Código)
                 for (let code in db) {
                     if (code.includes(val) || db[code].d.toUpperCase().includes(val)) {
                         matches.push({ code: code, ...db[code] });
-                        // Limitar a 15 resultados para não travar a tela
-                        if (matches.length >= 15) break; 
+                        if (matches.length >= 15) break;
                     }
                 }
 
@@ -390,100 +983,102 @@
                     commercialSection.style.opacity = '0';
                     setTimeout(() => commercialSection.style.display = 'none', 300);
                 }
-            }, 150); // Atraso de 150ms para evitar engasgos ao digitar rápido
+            }, 150);
         });
 
+        // ─── RENDERIZAR SUGESTÕES ─────────────────────────────────────────────
         function renderSuggestions(matches) {
             suggestionsBox.innerHTML = '';
             matches.forEach(m => {
                 const div = document.createElement('div');
                 div.className = 'suggestion-item';
-                
+
                 let imgSrc = 'https://cdn-icons-png.flaticon.com/512/3374/3374345.png';
                 if (m.e) { imgSrc = `https://salesforceimage.stcruz.com.br/imagens/${m.e}.jpg`; }
 
                 div.innerHTML = `
-                    <img class="sugg-img" src="${imgSrc}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3374/3374345.png';">
+                    <img class="sugg-img" src="${imgSrc}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3374/3374345.png';" loading="lazy">
                     <div class="sugg-info">
                         <span class="sugg-name">${m.d}</span>
                         <span class="sugg-code">CÓD: ${m.code}</span>
                     </div>
                 `;
-                
-                // Ao clicar num resultado
+
                 div.addEventListener('click', () => {
-                    codigoInput.value = m.d; // Coloca o nome na barra
+                    codigoInput.value = m.d;
                     suggestionsBox.style.display = 'none';
-                    
+                    resetSearchRadius();
+
                     currentProduct = m;
                     statusMsg.style.display = 'none';
-                    
-                    // Preencher Cartão
+
+                    // Preencher card
                     document.getElementById('lblDescricao').innerText = currentProduct.d;
                     document.getElementById('lblCod').innerText = currentProduct.code;
-                    
+
                     const imgEl = document.getElementById('imgProduto');
                     const eanEl = document.getElementById('lblEAN');
-                    
+
                     if (currentProduct.e) {
                         eanEl.innerText = `EAN: ${currentProduct.e}`;
                         imgEl.src = `https://salesforceimage.stcruz.com.br/imagens/${currentProduct.e}.jpg`;
                     } else {
-                        eanEl.innerText = `EAN: Indisponível`;
+                        eanEl.innerText = 'EAN: Indisponível';
                         imgEl.src = 'https://cdn-icons-png.flaticon.com/512/3374/3374345.png';
                     }
 
-                    document.getElementById('lblPF').innerText = formatMoney(currentProduct.pf);
+                    document.getElementById('lblPF').innerText  = formatMoney(currentProduct.pf);
                     document.getElementById('lblPMC').innerText = currentProduct.p > 0 ? formatMoney(currentProduct.p) : 'LIBERADO';
-                    pfNazaria.placeholder = formatMoney(currentProduct.pf);
-                    
+                    pfNazaria.placeholder = currentProduct.pf.toFixed(2);
+
                     productData.style.display = 'block';
                     commercialSection.style.display = 'block';
-                    
+
                     pfNazaria.value = "";
-                    descPan.value = 11;
-                    descNaz.value = 8.5;
+                    descPan.value  = 11;
+                    descNaz.value  = 8.5;
                     qtyInput.value = 1;
 
                     setTimeout(() => commercialSection.style.opacity = '1', 50);
                     calcular();
                 });
-                
+
                 suggestionsBox.appendChild(div);
             });
+
             suggestionsBox.style.display = 'block';
-            
-            // Arredondar base do input para juntar com o dropdown
-            codigoInput.style.borderBottomLeftRadius = '0';
+            codigoInput.style.borderBottomLeftRadius  = '0';
             codigoInput.style.borderBottomRightRadius = '0';
         }
 
-        // Eventos
+        function resetSearchRadius() {
+            codigoInput.style.borderBottomLeftRadius  = '';
+            codigoInput.style.borderBottomRightRadius = '';
+        }
+
+        // ─── EVENTOS ──────────────────────────────────────────────────────────
         descPan.addEventListener('input', calcular);
         descNaz.addEventListener('input', calcular);
         pfNazaria.addEventListener('input', calcular);
 
-        // Quantidade
         qtyInput.addEventListener('input', () => {
             if (parseInt(qtyInput.value) < 1 || qtyInput.value === '') qtyInput.value = 1;
             calcular();
         });
+
         document.getElementById('qtyMinus').addEventListener('click', () => {
             const v = parseInt(qtyInput.value) || 1;
             if (v > 1) { qtyInput.value = v - 1; calcular(); }
         });
+
         document.getElementById('qtyPlus').addEventListener('click', () => {
             qtyInput.value = (parseInt(qtyInput.value) || 1) + 1;
             calcular();
         });
-        
-        // Retornar as bordas do input quando o dropdown fechar
+
         codigoInput.addEventListener('blur', () => {
             setTimeout(() => {
-                if(suggestionsBox.style.display === 'none') {
-                    codigoInput.style.borderBottomLeftRadius = '20px';
-                    codigoInput.style.borderBottomRightRadius = '20px';
-                }
+                if (suggestionsBox.style.display === 'none') resetSearchRadius();
             }, 200);
         });
     </script>
