@@ -214,9 +214,30 @@
 
         .search-wrapper:focus-within .search-icon { color: var(--blue-500); }
 
+        /* Botão limpar busca */
+        .btn-clear {
+            position: absolute;
+            right: 10px; top: 50%;
+            transform: translateY(-50%);
+            display: none;                      /* visível só via JS */
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;         /* área de toque confortável */
+            border: none;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-300);
+            border-radius: 50%;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, transform 0.1s;
+            z-index: 3;
+        }
+        .btn-clear:active { background: rgba(255,255,255,0.18); transform: translateY(-50%) scale(0.88); }
+
         .search-wrapper input {
             width: 100%;
-            padding: 17px 18px 17px 46px;
+            padding: 17px 50px 17px 46px;      /* right extra para o botão × */
             font-size: 1rem;
             font-weight: 600;
             font-family: 'Inter', sans-serif;
@@ -745,6 +766,7 @@
 
                 <input type="text" id="codigoInput" placeholder="Nome ou código do produto..." autocomplete="off" inputmode="text">
 
+                <button type="button" id="btnClear" class="btn-clear" aria-label="Limpar busca">×</button>
                 <div id="suggestions" class="suggestions-dropdown"></div>
             </div>
 
@@ -866,6 +888,28 @@
         const statusMsg = document.getElementById('status-msg');
         const productData = document.getElementById('productData');
         const commercialSection = document.getElementById('commercialSection');
+        const btnClear = document.getElementById('btnClear');
+
+        // ─── EXIBIR / OCULTAR botão × conforme há texto ──────────────────────
+        function syncClearBtn() {
+            btnClear.style.display = codigoInput.value.length > 0 ? 'flex' : 'none';
+        }
+
+        // ─── LIMPAR BUSCA COMPLETA ────────────────────────────────────────────
+        function clearSearch() {
+            codigoInput.value = '';
+            syncClearBtn();
+            suggestionsBox.style.display = 'none';
+            statusMsg.style.display = 'none';
+            productData.style.display = 'none';
+            commercialSection.style.opacity = '0';
+            setTimeout(() => { commercialSection.style.display = 'none'; }, 300);
+            currentProduct = null;
+            resetSearchRadius();
+            codigoInput.focus();
+        }
+
+        btnClear.addEventListener('click', clearSearch);
 
         const descPan  = document.getElementById('descPan');
         const descNaz  = document.getElementById('descNaz');
@@ -946,6 +990,7 @@
 
         // ─── BUSCA COM DEBOUNCE ───────────────────────────────────────────────
         codigoInput.addEventListener('input', (e) => {
+            syncClearBtn();
             clearTimeout(debounceTimer);
             const val = e.target.value.trim().toUpperCase();
 
@@ -1006,6 +1051,7 @@
 
                 div.addEventListener('click', () => {
                     codigoInput.value = m.d;
+                    syncClearBtn();
                     suggestionsBox.style.display = 'none';
                     resetSearchRadius();
 
